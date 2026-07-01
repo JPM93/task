@@ -1162,6 +1162,7 @@
         (function () {
             let currentUser = null, currentPage = 'dashboard';
             const APP_PREFIX = 'taskflow_';
+            const LAST_PAGE_KEY = APP_PREFIX + 'last_page'; // stores last visited page
 
             // Toast helper
             function showToast(msg, type = 'info') {
@@ -1219,21 +1220,14 @@
             window.formatNoteText = function (cmd) { const ta = document.getElementById('noteContent'); const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e); let fmt = '', off = 0; switch (cmd) { case 'bold': fmt = `**${sel}**`; off = 2; break; case 'italic': fmt = `*${sel}*`; off = 1; break; case 'underline': fmt = `__${sel}__`; off = 2; break; case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break; case 'code': fmt = `\`${sel}\``; off = 1; break; } ta.value = ta.value.substring(0, s) + fmt + ta.value.substring(e); ta.focus(); ta.setSelectionRange(s + off, s + off + sel.length); renderNotePreview(); };
 
             // ---- Slack-style rich text formatting engine ----
-            // Supported syntax: **bold**, *italic*, __underline__, ~~strikethrough~~, `code`
             function parseFormatting(raw) {
                 if (!raw) return '';
                 let html = escapeHtml(raw);
-                // code first so markers inside code aren't re-processed
                 html = html.replace(/`([^`]+?)`/g, '<code>$1</code>');
-                // bold
                 html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
-                // underline
                 html = html.replace(/__([^_]+?)__/g, '<u>$1</u>');
-                // strikethrough
                 html = html.replace(/~~([^~]+?)~~/g, '<del>$1</del>');
-                // italic (single asterisk, avoid touching remaining ** which are already consumed)
                 html = html.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
-                // line breaks
                 html = html.replace(/\n/g, '<br>');
                 return html;
             }
@@ -1496,6 +1490,10 @@
                 const nav = document.querySelector(`[data-page="${page}"]`); if (nav) nav.classList.add('active');
                 const titles = { dashboard: '📊 Dashboard', tasks: '📋 All Tasks', todayTasks: '📅 Today\'s Tasks', futureTasks: '🔮 Future Tasks', projects: '📁 Projects', team: '👥 Team Members', notes: '📝 Notes', eod: '📧 EOD Report', settings: '⚙️ Settings & Sync' };
                 document.getElementById('pageTitle').textContent = titles[page] || page;
+                // Save current page for restoration on reload
+                if (currentUser) {
+                    localStorage.setItem(LAST_PAGE_KEY, page);
+                }
                 refreshCurrentPage();
                 if (page === 'settings') loadDriveConfigInputs();
             }
@@ -1605,19 +1603,62 @@
             function formatDate(ds) { if (!ds) return 'N/A'; const d = new Date(ds + 'T00:00:00'); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
             function formatDateTime(iso) { if (!iso) return 'N/A'; const d = new Date(iso); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); }
 
-            document.getElementById('loginForm').addEventListener('submit', function (e) { e.preventDefault(); if (login(document.getElementById('loginEmail').value.trim(), document.getElementById('loginPassword').value)) { document.getElementById('authContainer').style.display = 'none'; document.getElementById('appContainer').style.display = 'flex'; document.getElementById('userDisplayName').textContent = currentUser.name; document.getElementById('userAvatarLetter').textContent = currentUser.name.charAt(0).toUpperCase(); document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); navigateTo('dashboard'); refreshCurrentPage(); } });
-            document.getElementById('registerForm').addEventListener('submit', function (e) { e.preventDefault(); const name = document.getElementById('regName').value.trim(); const email = document.getElementById('regEmail').value.trim(); const password = document.getElementById('regPassword').value; const confirm = document.getElementById('regConfirmPassword').value; if (!name) { showToast('Name required', 'warning'); return; } if (password.length < 6) { showToast('Password min 6 chars', 'warning'); return; } if (password !== confirm) { showToast('Passwords mismatch', 'warning'); return; } if (register(name, email, password)) { showLogin(); document.getElementById('loginEmail').value = email; } });
-            document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => l.addEventListener('click', function () { const page = this.getAttribute('data-page'); if (page) navigateTo(page); }));
+            // ---------- STARTUP & PAGE PERSISTENCE ----------
+            function startAppWithUser() {
+                // Show main app, set user info, and navigate to last saved page (or dashboard)
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'flex';
+                document.getElementById('userDisplayName').textContent = currentUser.name;
+                document.getElementById('userAvatarLetter').textContent = currentUser.name.charAt(0).toUpperCase();
+                document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const lastPage = localStorage.getItem(LAST_PAGE_KEY) || 'dashboard';
+                navigateTo(lastPage);
+            }
 
             function init() {
                 const savedUserId = localStorage.getItem(APP_PREFIX + 'current_user_id');
                 if (savedUserId) {
-                    const users = JSON.parse(localStorage.getItem(APP_PREFIX + 'all_users') || '[]'); const user = users.find(u => u.id === savedUserId);
-                    if (user) { currentUser = user; document.getElementById('authContainer').style.display = 'none'; document.getElementById('appContainer').style.display = 'flex'; document.getElementById('userDisplayName').textContent = currentUser.name; document.getElementById('userAvatarLetter').textContent = currentUser.name.charAt(0).toUpperCase(); document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); navigateTo('dashboard'); refreshCurrentPage(); return; }
-                    else localStorage.removeItem(APP_PREFIX + 'current_user_id');
+                    const users = JSON.parse(localStorage.getItem(APP_PREFIX + 'all_users') || '[]');
+                    const user = users.find(u => u.id === savedUserId);
+                    if (user) {
+                        currentUser = user;
+                        startAppWithUser();
+                        return;
+                    } else {
+                        localStorage.removeItem(APP_PREFIX + 'current_user_id');
+                    }
                 }
-                document.getElementById('authContainer').style.display = 'flex'; document.getElementById('appContainer').style.display = 'none'; document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                // No user, show auth
+                document.getElementById('authContainer').style.display = 'flex';
+                document.getElementById('appContainer').style.display = 'none';
+                document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             }
+
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (login(document.getElementById('loginEmail').value.trim(), document.getElementById('loginPassword').value)) {
+                    startAppWithUser();
+                }
+            });
+            document.getElementById('registerForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const name = document.getElementById('regName').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const password = document.getElementById('regPassword').value;
+                const confirm = document.getElementById('regConfirmPassword').value;
+                if (!name) { showToast('Name required', 'warning'); return; }
+                if (password.length < 6) { showToast('Password min 6 chars', 'warning'); return; }
+                if (password !== confirm) { showToast('Passwords mismatch', 'warning'); return; }
+                if (register(name, email, password)) {
+                    showLogin();
+                    document.getElementById('loginEmail').value = email;
+                }
+            });
+            document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => l.addEventListener('click', function () {
+                const page = this.getAttribute('data-page');
+                if (page) navigateTo(page);
+            }));
+
             init();
         })();
     </script>
