@@ -923,7 +923,6 @@
     </div>
 
     <!-- Modals: Task, Project, Team Member, Note, Fullscreen Note -->
-    <!-- [keep existing modal code unchanged] -->
     <div class="modal fade modal-custom" id="taskModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -1127,6 +1126,9 @@
             function logout() {
                 if (confirm('Logout?')) { currentUser = null; localStorage.removeItem(APP_PREFIX + 'current_user_id'); document.getElementById('appContainer').style.display = 'none'; document.getElementById('authContainer').style.display = 'flex'; document.getElementById('loginCard').style.display = 'block'; document.getElementById('registerCard').style.display = 'none'; document.getElementById('loginForm').reset(); showToast('Logged out', 'info'); }
             }
+            // FIX: attach logout to window so the onclick attribute can find it
+            window.logout = logout;
+
             window.showRegister = () => { document.getElementById('loginCard').style.display = 'none'; document.getElementById('registerCard').style.display = 'block'; };
             window.showLogin = () => { document.getElementById('registerCard').style.display = 'none'; document.getElementById('loginCard').style.display = 'block'; };
 
