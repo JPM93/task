@@ -866,7 +866,7 @@
                 </div>
             </div>
 
-            <!-- Page sections: Dashboard, Tasks, Today, Future, Projects, Team, Notes, EOD, Settings -->
+            <!-- Dashboard -->
             <div class="section-page active" id="page-dashboard">
                 <div class="row g-3 mb-3">
                     <div class="col-md-3 col-sm-6">
@@ -915,6 +915,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- All Tasks -->
             <div class="section-page" id="page-tasks">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">📋 All Tasks</h5><button class="btn btn-primary-custom"
@@ -938,6 +940,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Today Tasks -->
             <div class="section-page" id="page-todayTasks">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">📅 Today's Tasks</h5><button class="btn btn-primary-custom"
@@ -947,6 +951,8 @@
                     <div id="todayTasksList"></div>
                 </div>
             </div>
+
+            <!-- Future Tasks -->
             <div class="section-page" id="page-futureTasks">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">🔮 Future Tasks</h5><button class="btn btn-primary-custom"
@@ -956,6 +962,8 @@
                     <div id="futureTasksList"></div>
                 </div>
             </div>
+
+            <!-- Projects -->
             <div class="section-page" id="page-projects">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">📁 Projects</h5><button class="btn btn-primary-custom"
@@ -963,6 +971,8 @@
                 </div>
                 <div class="row g-3" id="projectsGrid"></div>
             </div>
+
+            <!-- Team -->
             <div class="section-page" id="page-team">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">👥 Team Members</h5><button class="btn btn-primary-custom"
@@ -970,6 +980,8 @@
                 </div>
                 <div class="row g-3" id="teamGrid"></div>
             </div>
+
+            <!-- Notes -->
             <div class="section-page" id="page-notes">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">📝 Notes</h5><button class="btn btn-primary-custom"
@@ -977,17 +989,25 @@
                 </div>
                 <div class="row g-3" id="notesGrid"></div>
             </div>
+
+            <!-- EOD -->
             <div class="section-page" id="page-eod">
                 <h5 class="fw-bold mb-3">📧 End of Day Report</h5>
                 <div class="card-custom">
-                    <div class="d-flex gap-2 mb-3"><button class="btn btn-primary-custom"
-                            onclick="generateEODReport()">Generate Today's Report</button><button
-                            class="btn btn-outline-custom" onclick="copyEODReport()">Copy to Clipboard</button><button
-                            class="btn btn-outline-custom" id="slackCopyBtn">Copy for Slack</button></div>
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <button class="btn btn-primary-custom" onclick="generateEODReport()">Generate Today's
+                            Report</button>
+                        <button class="btn btn-outline-custom" onclick="copyEODReport()">Copy to Clipboard</button>
+                        <button class="btn btn-outline-custom" id="slackCopyBtn">Copy for Slack</button>
+                        <button class="btn btn-outline-custom" id="whatsappCopyBtn">Copy for WhatsApp</button>
+                        <button class="btn btn-outline-custom" id="mailCopyBtn">Copy for Mail</button>
+                    </div>
                     <div class="eod-report-box" id="eodReportContent"><em>Click "Generate Today's Report" to create your
                             EOD summary...</em></div>
                 </div>
             </div>
+
+            <!-- Settings -->
             <div class="section-page" id="page-settings">
                 <h5 class="fw-bold mb-3">⚙️ Settings & Data Sync</h5>
                 <div class="row g-3">
@@ -1028,10 +1048,9 @@
                     <div class="col-md-6">
                         <div class="card-custom">
                             <h6><i class="fas fa-clock me-2"></i>Session Timeout</h6>
-                            <div class="mb-2"><label class="form-label small">Auto-lock after (minutes)</label>
-                                <input type="number" class="form-control form-control-sm" id="timeoutMinutes" min="1"
-                                    max="60" value="5" onchange="saveTimeoutSetting()">
-                            </div>
+                            <div class="mb-2"><label class="form-label small">Auto-lock after (minutes)</label><input
+                                    type="number" class="form-control form-control-sm" id="timeoutMinutes" min="1"
+                                    max="60" value="5" onchange="saveTimeoutSetting()"></div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -1059,7 +1078,7 @@
         </div>
     </div>
 
-    <!-- Modals: Task, Project, Team Member, Note, Fullscreen Note (unchanged) -->
+    <!-- Modals: Task, Project, Team Member, Note, Fullscreen Note -->
     <div class="modal fade modal-custom" id="taskModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -1085,8 +1104,8 @@
                                     onclick="formatText('italic')"><i>I</i></button><button type="button"
                                     onclick="formatText('underline')"><u>U</u></button><button type="button"
                                     onclick="formatText('strikethrough')"><s>S</s></button><button type="button"
-                                    onclick="formatText('code')"><i class="fas fa-code"></i></button></div><textarea
-                                class="form-control" id="taskDescription" rows="3"
+                                    onclick="formatText('code')"><i class="fas fa-code"></i></button></div>
+                            <textarea class="form-control" id="taskDescription" rows="3"
                                 oninput="renderTaskDescPreview()"></textarea>
                             <div class="format-preview-wrap"><span class="format-preview-label"><i
                                         class="fas fa-eye me-1"></i>Live Preview</span>
@@ -1204,8 +1223,8 @@
                                 onclick="formatNoteText('italic')"><i>I</i></button><button type="button"
                                 onclick="formatNoteText('underline')"><u>U</u></button><button type="button"
                                 onclick="formatNoteText('strikethrough')"><s>S</s></button><button type="button"
-                                onclick="formatNoteText('code')"><i class="fas fa-code"></i></button></div><textarea
-                            class="form-control" id="noteContent" rows="6" placeholder="Write your note..."
+                                onclick="formatNoteText('code')"><i class="fas fa-code"></i></button></div>
+                        <textarea class="form-control" id="noteContent" rows="6" placeholder="Write your note..."
                             oninput="renderNotePreview()"></textarea>
                         <div class="format-preview-wrap"><span class="format-preview-label"><i
                                     class="fas fa-eye me-1"></i>Live Preview</span>
@@ -1238,10 +1257,10 @@
             const LAST_PAGE_KEY = APP_PREFIX + 'last_page';
             const TIMEOUT_KEY = APP_PREFIX + 'timeout_minutes';
 
-            // Session variables
             let sessionTimer, sessionTickTimer;
             let locked = false;
 
+            // Toast helper
             function showToast(msg, type = 'info') {
                 const c = document.querySelector('.toast-container'); if (!c) return;
                 const bg = { success: 'bg-success text-white', error: 'bg-danger text-white', info: 'bg-info text-dark', warning: 'bg-warning text-dark' }[type] || 'bg-info text-dark';
@@ -1275,8 +1294,7 @@
             function logout() {
                 stopSessionTimer();
                 if (confirm('Logout?')) {
-                    currentUser = null;
-                    localStorage.removeItem(APP_PREFIX + 'current_user_id');
+                    currentUser = null; localStorage.removeItem(APP_PREFIX + 'current_user_id');
                     document.getElementById('appContainer').style.display = 'none';
                     document.getElementById('authContainer').style.display = 'flex';
                     document.getElementById('loginCard').style.display = 'block';
@@ -1287,7 +1305,6 @@
                 }
             }
             window.logout = logout;
-
             window.showRegister = () => { document.getElementById('loginCard').style.display = 'none'; document.getElementById('registerCard').style.display = 'block'; };
             window.showLogin = () => { document.getElementById('registerCard').style.display = 'none'; document.getElementById('loginCard').style.display = 'block'; };
 
@@ -1304,7 +1321,7 @@
             function saveTeam(m) { save('teamMembers', m); }
             function saveNotes(n) { save('notes', n); }
 
-            // Formatting
+            // Formatting helpers
             window.formatText = function (cmd) { const ta = document.getElementById('taskDescription'); const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e); let fmt = '', off = 0; switch (cmd) { case 'bold': fmt = `**${sel}**`; off = 2; break; case 'italic': fmt = `*${sel}*`; off = 1; break; case 'underline': fmt = `__${sel}__`; off = 2; break; case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break; case 'code': fmt = '`' + sel + '`'; off = 1; break; } ta.value = ta.value.substring(0, s) + fmt + ta.value.substring(e); ta.focus(); ta.setSelectionRange(s + off, s + off + sel.length); renderTaskDescPreview(); };
             window.formatNoteText = function (cmd) { const ta = document.getElementById('noteContent'); const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e); let fmt = '', off = 0; switch (cmd) { case 'bold': fmt = `**${sel}**`; off = 2; break; case 'italic': fmt = `*${sel}*`; off = 1; break; case 'underline': fmt = `__${sel}__`; off = 2; break; case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break; case 'code': fmt = '`' + sel + '`'; off = 1; break; } ta.value = ta.value.substring(0, s) + fmt + ta.value.substring(e); ta.focus(); ta.setSelectionRange(s + off, s + off + sel.length); renderNotePreview(); };
             function parseFormatting(raw) { if (!raw) return ''; let html = escapeHtml(raw); html = html.replace(/`([^`]+?)`/g, '<code>$1</code>'); html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>'); html = html.replace(/__([^_]+?)__/g, '<u>$1</u>'); html = html.replace(/~~([^~]+?)~~/g, '<del>$1</del>'); html = html.replace(/\*([^*]+?)\*/g, '<em>$1</em>'); html = html.replace(/\n/g, '<br>'); return html; }
@@ -1323,6 +1340,7 @@
             window.onStatusChange = function () { document.getElementById('statusCommentRow').style.display = 'block'; };
             function renderAuditLog() { const c = document.getElementById('auditLogContainer'); if (!currentAuditLog.length) { c.innerHTML = '<small class="text-muted">No activity yet.</small>'; return; } c.innerHTML = currentAuditLog.slice().reverse().map(e => `<div class="audit-entry"><strong>${new Date(e.timestamp).toLocaleString()}</strong>: ${e.oldStatus ? e.oldStatus + ' → ' : ''}<span class="badge bg-secondary">${e.newStatus}</span>${e.comment ? `<br><small>💬 ${escapeHtml(e.comment)}</small>` : ''}</div>`).join(''); }
 
+            // Task CRUD
             window.openTaskModal = function (mode = 'add', taskId = null) {
                 currentSubtasks = []; currentAuditLog = [];
                 document.getElementById('taskEditId').value = ''; document.getElementById('taskModalTitle').textContent = 'Add New Task';
@@ -1348,16 +1366,89 @@
                 new bootstrap.Modal(document.getElementById('taskModal')).show();
             };
             function populateCheckboxes(sU = [], sP = []) { const m = getTeam(), p = getProjects(); document.getElementById('taskTeamCheckboxes').innerHTML = m.length ? m.map(x => `<div class="form-check"><input class="form-check-input task-user-cb" type="checkbox" value="${x.id}" ${sU.includes(x.id) ? 'checked' : ''}> <label>${escapeHtml(x.name)}</label></div>`).join('') : '<small class="text-muted">No members</small>'; document.getElementById('taskProjectCheckboxes').innerHTML = p.length ? p.map(x => `<div class="form-check"><input class="form-check-input task-project-cb" type="checkbox" value="${x.id}" ${sP.includes(x.id) ? 'checked' : ''}> <label>📁 ${escapeHtml(x.name)}</label></div>`).join('') : '<small class="text-muted">No projects</small>'; }
-            window.saveTask = function () { const title = document.getElementById('taskTitle').value.trim(), due = document.getElementById('taskDueDate').value; if (!title) { showToast('Title required', 'warning'); return; } if (!due) { showToast('Due date required', 'warning'); return; } const tasks = getTasks(), editId = document.getElementById('taskEditId').value; const newStatus = document.getElementById('taskStatus').value, oldStatus = document.getElementById('taskOriginalStatus').value; const comment = document.getElementById('statusChangeComment').value.trim(); if (editId && newStatus !== oldStatus) currentAuditLog.push({ timestamp: new Date().toISOString(), oldStatus, newStatus, comment: comment || '' }); if (!editId) currentAuditLog.push({ timestamp: new Date().toISOString(), oldStatus: null, newStatus, comment: 'Task created' }); const assigned = [], proj = []; document.querySelectorAll('.task-user-cb:checked').forEach(c => assigned.push(c.value)); document.querySelectorAll('.task-project-cb:checked').forEach(c => proj.push(c.value)); const data = { id: editId || 'tsk_' + Date.now() + Math.random().toString(36).substr(2, 5), title, description: document.getElementById('taskDescription').value.trim(), priority: document.getElementById('taskPriority').value, dueDate: due, status: newStatus, isFuture: document.getElementById('taskIsFuture').value === 'yes', assignedTo: assigned, projectIds: proj, subtasks: currentSubtasks || [], auditLog: currentAuditLog || [], createdBy: currentUser ? currentUser.id : 'unknown', createdAt: editId ? (getTask(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString(), updatedAt: new Date().toISOString() }; if (editId) { const idx = tasks.findIndex(t => t.id === editId); if (idx >= 0) tasks[idx] = data; } else tasks.push(data); saveTasks(tasks); bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide(); showToast(editId ? 'Task updated!' : 'Task added!', 'success'); refreshCurrentPage(); };
+            window.saveTask = function () {
+                const title = document.getElementById('taskTitle').value.trim(), due = document.getElementById('taskDueDate').value;
+                if (!title) { showToast('Title required', 'warning'); return; } if (!due) { showToast('Due date required', 'warning'); return; }
+                const tasks = getTasks(), editId = document.getElementById('taskEditId').value;
+                const newStatus = document.getElementById('taskStatus').value, oldStatus = document.getElementById('taskOriginalStatus').value;
+                const comment = document.getElementById('statusChangeComment').value.trim();
+                if (editId && newStatus !== oldStatus) currentAuditLog.push({ timestamp: new Date().toISOString(), oldStatus, newStatus, comment: comment || '' });
+                if (!editId) currentAuditLog.push({ timestamp: new Date().toISOString(), oldStatus: null, newStatus, comment: 'Task created' });
+                const assigned = [], proj = [];
+                document.querySelectorAll('.task-user-cb:checked').forEach(c => assigned.push(c.value));
+                document.querySelectorAll('.task-project-cb:checked').forEach(c => proj.push(c.value));
+                const data = {
+                    id: editId || 'tsk_' + Date.now() + Math.random().toString(36).substr(2, 5), title,
+                    description: document.getElementById('taskDescription').value.trim(),
+                    priority: document.getElementById('taskPriority').value,
+                    dueDate: due, status: newStatus,
+                    isFuture: document.getElementById('taskIsFuture').value === 'yes',
+                    assignedTo: assigned, projectIds: proj,
+                    subtasks: currentSubtasks || [], auditLog: currentAuditLog || [],
+                    createdBy: currentUser ? currentUser.id : 'unknown',
+                    createdAt: editId ? (getTask(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                if (editId) { const idx = tasks.findIndex(t => t.id === editId); if (idx >= 0) tasks[idx] = data; }
+                else tasks.push(data);
+                saveTasks(tasks); bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
+                showToast(editId ? 'Task updated!' : 'Task added!', 'success'); refreshCurrentPage();
+            };
             window.deleteTask = function (id) { if (!confirm('Delete?')) return; saveTasks(getTasks().filter(t => t.id !== id)); showToast('Deleted', 'success'); refreshCurrentPage(); };
-            window.openProjectModal = function (mode, id) { document.getElementById('projectEditId').value = ''; document.getElementById('projectModalTitle').textContent = 'Add Project'; document.getElementById('projectName').value = ''; document.getElementById('projectDescription').value = ''; document.getElementById('projectStatus').value = 'active'; if (mode === 'edit' && id) { const p = getProject(id); if (p) { document.getElementById('projectEditId').value = p.id; document.getElementById('projectModalTitle').textContent = 'Edit Project'; document.getElementById('projectName').value = p.name; document.getElementById('projectDescription').value = p.description || ''; document.getElementById('projectStatus').value = p.status; } } new bootstrap.Modal(document.getElementById('projectModal')).show(); };
-            window.saveProject = function () { const name = document.getElementById('projectName').value.trim(); if (!name) { showToast('Project name required.', 'warning'); return; } const projects = getProjects(); const editId = document.getElementById('projectEditId').value; const data = { id: editId || 'prj_' + Date.now(), name, description: document.getElementById('projectDescription').value.trim(), status: document.getElementById('projectStatus').value, createdAt: editId ? (getProject(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString() }; if (editId) { const idx = projects.findIndex(p => p.id === editId); if (idx >= 0) projects[idx] = data; } else projects.push(data); saveProjects(projects); bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide(); showToast('Project saved!', 'success'); refreshCurrentPage(); };
+
+            // Project CRUD
+            window.openProjectModal = function (mode, id) {
+                document.getElementById('projectEditId').value = ''; document.getElementById('projectModalTitle').textContent = 'Add Project';
+                document.getElementById('projectName').value = ''; document.getElementById('projectDescription').value = '';
+                document.getElementById('projectStatus').value = 'active';
+                if (mode === 'edit' && id) { const p = getProject(id); if (p) { document.getElementById('projectEditId').value = p.id; document.getElementById('projectModalTitle').textContent = 'Edit Project'; document.getElementById('projectName').value = p.name; document.getElementById('projectDescription').value = p.description || ''; document.getElementById('projectStatus').value = p.status; } }
+                new bootstrap.Modal(document.getElementById('projectModal')).show();
+            };
+            window.saveProject = function () {
+                const name = document.getElementById('projectName').value.trim(); if (!name) { showToast('Project name required.', 'warning'); return; }
+                const projects = getProjects(); const editId = document.getElementById('projectEditId').value;
+                const data = { id: editId || 'prj_' + Date.now(), name, description: document.getElementById('projectDescription').value.trim(), status: document.getElementById('projectStatus').value, createdAt: editId ? (getProject(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString() };
+                if (editId) { const idx = projects.findIndex(p => p.id === editId); if (idx >= 0) projects[idx] = data; }
+                else projects.push(data);
+                saveProjects(projects); bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
+                showToast('Project saved!', 'success'); refreshCurrentPage();
+            };
             window.deleteProject = function (id) { if (!confirm('Delete project?')) return; saveProjects(getProjects().filter(p => p.id !== id)); const tasks = getTasks().map(t => { if (t.projectIds) t.projectIds = t.projectIds.filter(pid => pid !== id); return t; }); saveTasks(tasks); showToast('Project deleted.', 'success'); refreshCurrentPage(); };
-            window.openTeamMemberModal = function (mode, id) { document.getElementById('teamEditId').value = ''; document.getElementById('teamName').value = ''; document.getElementById('teamEmail').value = ''; document.getElementById('teamRole').value = ''; if (mode === 'edit' && id) { const m = getMember(id); if (m) { document.getElementById('teamEditId').value = m.id; document.getElementById('teamName').value = m.name; document.getElementById('teamEmail').value = m.email || ''; document.getElementById('teamRole').value = m.role || ''; } } new bootstrap.Modal(document.getElementById('teamMemberModal')).show(); };
-            window.saveTeamMember = function () { const name = document.getElementById('teamName').value.trim(); if (!name) { showToast('Name required.', 'warning'); return; } const members = getTeam(); const editId = document.getElementById('teamEditId').value; const data = { id: editId || 'mem_' + Date.now(), name, email: document.getElementById('teamEmail').value.trim(), role: document.getElementById('teamRole').value.trim(), createdAt: editId ? (getMember(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString() }; if (editId) { const idx = members.findIndex(m => m.id === editId); if (idx >= 0) members[idx] = data; } else members.push(data); saveTeam(members); bootstrap.Modal.getInstance(document.getElementById('teamMemberModal')).hide(); showToast('Team member saved!', 'success'); refreshCurrentPage(); };
+
+            // Team CRUD
+            window.openTeamMemberModal = function (mode, id) {
+                document.getElementById('teamEditId').value = ''; document.getElementById('teamName').value = ''; document.getElementById('teamEmail').value = ''; document.getElementById('teamRole').value = '';
+                if (mode === 'edit' && id) { const m = getMember(id); if (m) { document.getElementById('teamEditId').value = m.id; document.getElementById('teamName').value = m.name; document.getElementById('teamEmail').value = m.email || ''; document.getElementById('teamRole').value = m.role || ''; } }
+                new bootstrap.Modal(document.getElementById('teamMemberModal')).show();
+            };
+            window.saveTeamMember = function () {
+                const name = document.getElementById('teamName').value.trim(); if (!name) { showToast('Name required.', 'warning'); return; }
+                const members = getTeam(); const editId = document.getElementById('teamEditId').value;
+                const data = { id: editId || 'mem_' + Date.now(), name, email: document.getElementById('teamEmail').value.trim(), role: document.getElementById('teamRole').value.trim(), createdAt: editId ? (getMember(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString() };
+                if (editId) { const idx = members.findIndex(m => m.id === editId); if (idx >= 0) members[idx] = data; }
+                else members.push(data);
+                saveTeam(members); bootstrap.Modal.getInstance(document.getElementById('teamMemberModal')).hide();
+                showToast('Team member saved!', 'success'); refreshCurrentPage();
+            };
             window.deleteTeamMember = function (id) { if (!confirm('Delete member?')) return; saveTeam(getTeam().filter(m => m.id !== id)); const tasks = getTasks().map(t => { if (t.assignedTo) t.assignedTo = t.assignedTo.filter(uid => uid !== id); return t; }); saveTasks(tasks); showToast('Member deleted.', 'success'); refreshCurrentPage(); };
-            window.openNoteModal = function (mode, id) { document.getElementById('noteEditId').value = ''; document.getElementById('noteTitle').value = ''; document.getElementById('noteContent').value = ''; document.getElementById('noteCategory').value = 'general'; renderNotePreview(); if (mode === 'edit' && id) { const notes = getNotes(); const n = notes.find(nt => nt.id === id); if (n) { document.getElementById('noteEditId').value = n.id; document.getElementById('noteTitle').value = n.title || ''; document.getElementById('noteContent').value = n.content || ''; document.getElementById('noteCategory').value = n.category || 'general'; renderNotePreview(); } } new bootstrap.Modal(document.getElementById('noteModal')).show(); };
-            window.saveNote = function () { const content = document.getElementById('noteContent').value.trim(); const title = document.getElementById('noteTitle').value.trim(); if (!content && !title) { showToast('Please add some content.', 'warning'); return; } const notes = getNotes(); const editId = document.getElementById('noteEditId').value; const data = { id: editId || 'note_' + Date.now(), title: title || 'Untitled', content, category: document.getElementById('noteCategory').value, createdAt: editId ? (notes.find(n => n.id === editId)?.createdAt || new Date().toISOString()) : new Date().toISOString(), updatedAt: new Date().toISOString() }; if (editId) { const idx = notes.findIndex(n => n.id === editId); if (idx >= 0) notes[idx] = data; } else notes.push(data); saveNotes(notes); bootstrap.Modal.getInstance(document.getElementById('noteModal')).hide(); showToast('Note saved!', 'success'); refreshCurrentPage(); };
+
+            // Notes CRUD
+            window.openNoteModal = function (mode, id) {
+                document.getElementById('noteEditId').value = ''; document.getElementById('noteTitle').value = ''; document.getElementById('noteContent').value = ''; document.getElementById('noteCategory').value = 'general';
+                renderNotePreview();
+                if (mode === 'edit' && id) { const notes = getNotes(); const n = notes.find(nt => nt.id === id); if (n) { document.getElementById('noteEditId').value = n.id; document.getElementById('noteTitle').value = n.title || ''; document.getElementById('noteContent').value = n.content || ''; document.getElementById('noteCategory').value = n.category || 'general'; renderNotePreview(); } }
+                new bootstrap.Modal(document.getElementById('noteModal')).show();
+            };
+            window.saveNote = function () {
+                const content = document.getElementById('noteContent').value.trim(); const title = document.getElementById('noteTitle').value.trim();
+                if (!content && !title) { showToast('Please add some content.', 'warning'); return; }
+                const notes = getNotes(); const editId = document.getElementById('noteEditId').value;
+                const data = { id: editId || 'note_' + Date.now(), title: title || 'Untitled', content, category: document.getElementById('noteCategory').value, createdAt: editId ? (notes.find(n => n.id === editId)?.createdAt || new Date().toISOString()) : new Date().toISOString(), updatedAt: new Date().toISOString() };
+                if (editId) { const idx = notes.findIndex(n => n.id === editId); if (idx >= 0) notes[idx] = data; }
+                else notes.push(data);
+                saveNotes(notes); bootstrap.Modal.getInstance(document.getElementById('noteModal')).hide();
+                showToast('Note saved!', 'success'); refreshCurrentPage();
+            };
             window.deleteNote = function (id) { if (!confirm('Delete note?')) return; saveNotes(getNotes().filter(n => n.id !== id)); showToast('Note deleted.', 'success'); refreshCurrentPage(); };
             window.viewNoteFullscreen = function (noteId) { const notes = getNotes(); const note = notes.find(n => n.id === noteId); if (!note) return; document.getElementById('fullscreenNoteTitle').textContent = note.title || 'Untitled'; document.getElementById('fullscreenNoteContent').innerHTML = parseFormatting(note.content || ''); document.getElementById('noteFullscreenOverlay').style.display = 'flex'; };
             window.closeNoteFullscreen = function () { document.getElementById('noteFullscreenOverlay').style.display = 'none'; };
@@ -1376,9 +1467,7 @@
                 const config = getDriveConfig(); if (!config.clientId) { showToast('Please configure Google OAuth Client ID in Settings.', 'warning'); return null; }
                 if (!googleTokenClient) { googleTokenClient = google.accounts.oauth2.initTokenClient({ client_id: config.clientId, scope: 'https://www.googleapis.com/auth/drive.file', callback: (tokenResponse) => { if (tokenResponse && tokenResponse.access_token) { localStorage.setItem('gdrive_token_' + currentUser.id, tokenResponse.access_token); } } }); }
                 let token = localStorage.getItem('gdrive_token_' + currentUser.id);
-                if (token) {
-                    try { const testRes = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', { headers: { Authorization: 'Bearer ' + token } }); if (!testRes.ok) { localStorage.removeItem('gdrive_token_' + currentUser.id); token = null; } } catch (e) { token = null; }
-                }
+                if (token) { try { const testRes = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', { headers: { Authorization: 'Bearer ' + token } }); if (!testRes.ok) { localStorage.removeItem('gdrive_token_' + currentUser.id); token = null; } } catch (e) { token = null; } }
                 if (!token) { googleTokenClient.requestAccessToken(); await new Promise(resolve => setTimeout(resolve, 2000)); token = localStorage.getItem('gdrive_token_' + currentUser.id); }
                 return token;
             }
@@ -1441,7 +1530,7 @@
                 } catch (err) { setDriveStatus('❌ Restore failed: ' + err.message, true); }
             };
 
-            // Navigation
+            // Navigation & Page Refresh
             function navigateTo(page) {
                 currentPage = page;
                 document.querySelectorAll('.section-page').forEach(el => el.classList.remove('active'));
@@ -1496,103 +1585,114 @@
             function refreshTeam() { const members = getTeam(); const grid = document.getElementById('teamGrid'); if (!members.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-user-group"></i><p>No team members yet.</p></div>'; return; } grid.innerHTML = members.map(m => `<div class="col-md-3 col-sm-6"><div class="card-custom text-center h-100"><div class="user-avatar mx-auto mb-2" style="width:50px;height:50px;font-size:1.2rem;">${m.name.charAt(0).toUpperCase()}</div><h6 class="fw-bold mb-0">${escapeHtml(m.name)}</h6><small class="text-muted">${escapeHtml(m.role || 'Team Member')}</small><br><small>${escapeHtml(m.email || '')}</small><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openTeamMemberModal('edit','${m.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteTeamMember('${m.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
             function refreshNotes() { const notes = getNotes(); const grid = document.getElementById('notesGrid'); if (!notes.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-sticky-note"></i><p>No notes yet.</p></div>'; return; } grid.innerHTML = notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(n => `<div class="col-md-4 col-sm-6"><div class="card-custom h-100"><span class="badge bg-secondary mb-1">${n.category || 'general'}</span><h6 class="fw-bold">${escapeHtml(n.title || 'Untitled')}</h6><p class="text-muted small rich-text-content" style="white-space:pre-wrap;">${formatPreview(n.content || '', 150)}</p><small class="text-muted">Updated: ${formatDateTime(n.updatedAt)}</small><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openNoteModal('edit','${n.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-info" onclick="viewNoteFullscreen('${n.id}')"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteNote('${n.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
 
+            // EOD Report Generation (FIXED: blocked tasks now excluded)
             window.generateEODReport = function () {
-                const today = new Date().toISOString().split('T')[0]; const allTasks = getTasks();
+                const today = new Date().toISOString().split('T')[0];
+                const allTasks = getTasks();
                 const userName = currentUser ? currentUser.name : 'User';
                 const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                const completedToday = allTasks.filter(t => { if (t.status !== 'completed') return false; if (t.auditLog && t.auditLog.length) { const lastCompleted = [...t.auditLog].reverse().find(e => e.newStatus === 'completed'); if (lastCompleted && lastCompleted.timestamp.startsWith(today)) return true; } return t.dueDate === today; });
-                const pendingToday = allTasks.filter(t => { if (t.status === 'completed') return false; if (t.isFuture && t.dueDate > today) return false; return t.dueDate <= today; });
+
+                // Completed today: status completed and (audit log indicates completed today or dueDate today)
+                const completedToday = allTasks.filter(t => {
+                    if (t.status !== 'completed') return false;
+                    if (t.auditLog && t.auditLog.length) {
+                        const lastCompleted = [...t.auditLog].reverse().find(e => e.newStatus === 'completed');
+                        if (lastCompleted && lastCompleted.timestamp.startsWith(today)) return true;
+                    }
+                    return t.dueDate === today;
+                });
+
+                // Pending/In Progress: not completed, NOT blocked, not future beyond today, dueDate <= today
+                const pendingToday = allTasks.filter(t => {
+                    if (t.status === 'completed' || t.status === 'blocked') return false;
+                    if (t.isFuture && t.dueDate > today) return false;
+                    return t.dueDate <= today;
+                });
+
                 let report = `📧 EOD Report - ${dateStr}\n👤 By: ${userName}\n${'─'.repeat(40)}\n\n✅ Completed Today (${completedToday.length}):\n`;
-                if (completedToday.length) completedToday.forEach((t, i) => { report += `  ${i + 1}. ${t.title} [${t.priority.toUpperCase()}]\n`; }); else report += `  No tasks completed today.\n`;
+                if (completedToday.length) {
+                    completedToday.forEach((t, i) => { report += `  ${i + 1}. ${t.title} [${t.priority.toUpperCase()}]\n`; });
+                } else {
+                    report += `  No tasks completed today.\n`;
+                }
                 report += `\n📋 Pending/In Progress (${pendingToday.length}):\n`;
-                if (pendingToday.length) pendingToday.forEach((t, i) => { report += `  ${i + 1}. ${t.title} - ${t.status} [${t.priority.toUpperCase()}] 📅 ${formatDate(t.dueDate)}\n`; if (t.description) report += `     ${t.description.substring(0, 80)}\n`; if (t.subtasks && t.subtasks.length) { const done = t.subtasks.filter(s => s.status === 'completed').length; report += `     📋 Subtasks: ${done}/${t.subtasks.length} completed\n`; } }); else report += `  All caught up!\n`;
-                report += `\n${'─'.repeat(40)}\n🔗 Connections:\n`; const allToday = [...completedToday, ...pendingToday]; const uProj = new Set(), uPpl = new Set();
+                if (pendingToday.length) {
+                    pendingToday.forEach((t, i) => {
+                        report += `  ${i + 1}. ${t.title} - ${t.status} [${t.priority.toUpperCase()}] 📅 ${formatDate(t.dueDate)}\n`;
+                        if (t.description) report += `     ${t.description.substring(0, 80)}\n`;
+                        if (t.subtasks && t.subtasks.length) {
+                            const done = t.subtasks.filter(s => s.status === 'completed').length;
+                            report += `     📋 Subtasks: ${done}/${t.subtasks.length} completed\n`;
+                        }
+                    });
+                } else {
+                    report += `  All caught up!\n`;
+                }
+                report += `\n${'─'.repeat(40)}\n🔗 Connections:\n`;
+                const allToday = [...completedToday, ...pendingToday];
+                const uProj = new Set(), uPpl = new Set();
                 allToday.forEach(t => { if (t.projectIds) t.projectIds.forEach(p => uProj.add(p)); if (t.assignedTo) t.assignedTo.forEach(u => uPpl.add(u)); });
                 if (uProj.size) { report += `  📁 Projects: `; uProj.forEach(pid => { const p = getProject(pid); if (p) report += `${p.name}, `; }); report = report.replace(/, $/, '\n'); }
                 if (uPpl.size) { report += `  👥 Team: `; uPpl.forEach(uid => { const m = getMember(uid); if (m) report += `${m.name}, `; }); report = report.replace(/, $/, '\n'); }
                 report += `\n${'─'.repeat(40)}\n⚡ Generated by TaskFlow Pro`;
-                document.getElementById('eodReportContent').textContent = report; showToast('EOD Report generated!', 'success');
+                document.getElementById('eodReportContent').textContent = report;
+                showToast('EOD Report generated!', 'success');
             };
-            window.copyEODReport = function () { const content = document.getElementById('eodReportContent').textContent; if (content.includes('Click "Generate')) { showToast('Please generate the report first.', 'warning'); return; } navigator.clipboard.writeText(content).then(() => showToast('📋 Copied!', 'success')).catch(() => showToast('Failed', 'error')); };
-            document.getElementById('slackCopyBtn').addEventListener('click', () => { const content = document.getElementById('eodReportContent').textContent; if (content.includes('Click "Generate')) { showToast('Please generate the report first.', 'warning'); return; } navigator.clipboard.writeText('```\n' + content + '\n```').then(() => showToast('📋 Slack code block copied!', 'success')).catch(() => showToast('Failed', 'error')); });
 
+            // Copy functions
+            function getPlainReport() {
+                const content = document.getElementById('eodReportContent').textContent;
+                if (content.includes('Click "Generate')) { showToast('Please generate the report first.', 'warning'); return null; }
+                return content;
+            }
+            window.copyEODReport = function () {
+                const content = getPlainReport();
+                if (!content) return;
+                navigator.clipboard.writeText(content).then(() => showToast('📋 Copied to Clipboard!', 'success')).catch(() => showToast('Copy failed', 'error'));
+            };
+            document.getElementById('slackCopyBtn').addEventListener('click', () => {
+                const content = getPlainReport();
+                if (!content) return;
+                navigator.clipboard.writeText('```\n' + content + '\n```').then(() => showToast('📋 Slack code block copied!', 'success')).catch(() => showToast('Copy failed', 'error'));
+            });
+            document.getElementById('whatsappCopyBtn').addEventListener('click', () => {
+                const content = getPlainReport();
+                if (!content) return;
+                // Format with bold headings for WhatsApp
+                const waText = content.replace(/^(📧|👤|✅|📋|🔗|📊).*$/gm, (line) => `*${line}*`);
+                navigator.clipboard.writeText(waText).then(() => showToast('📋 WhatsApp text copied!', 'success')).catch(() => showToast('Copy failed', 'error'));
+            });
+            document.getElementById('mailCopyBtn').addEventListener('click', () => {
+                const content = getPlainReport();
+                if (!content) return;
+                // Plain text is perfect for email
+                navigator.clipboard.writeText(content).then(() => showToast('📋 Mail text copied!', 'success')).catch(() => showToast('Copy failed', 'error'));
+            });
+
+            // Export/Import/Clear
             window.exportData = function () { const data = getAllData(); data.exportDate = new Date().toISOString(); const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `taskflow-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); showToast('Exported!', 'success'); };
             window.importData = function (event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function (e) { try { const data = JSON.parse(e.target.result); if (!data.tasks && !data.projects) { showToast('Invalid file', 'error'); return; } if (confirm('Replace all data?')) { restore(data); showToast('Imported!', 'success'); refreshCurrentPage(); } } catch (err) { showToast('Failed to parse JSON', 'error'); } }; reader.readAsText(file); event.target.value = ''; };
             window.clearAllData = function () { if (confirm('⚠️ Delete ALL data?')) { save('tasks', []); save('projects', []); save('teamMembers', []); save('notes', []); showToast('All data cleared.', 'success'); refreshCurrentPage(); } };
 
+            // Helpers
             function escapeHtml(str) { if (!str) return ''; const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
             function formatDate(ds) { if (!ds) return 'N/A'; const d = new Date(ds + 'T00:00:00'); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
             function formatDateTime(iso) { if (!iso) return 'N/A'; const d = new Date(iso); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); }
 
-            // ---------- SESSION TIMEOUT ----------
-            function getTimeoutMs() {
-                const mins = parseInt(localStorage.getItem(TIMEOUT_KEY) || '5') || 5;
-                return mins * 60 * 1000;
-            }
-            function resetSessionTimer() {
-                if (!currentUser || locked) return;
-                clearTimeout(sessionTimer);
-                clearInterval(sessionTickTimer);
-                sessionTimer = setTimeout(lockSession, getTimeoutMs());
-            }
-            function stopSessionTimer() {
-                clearTimeout(sessionTimer);
-                clearInterval(sessionTickTimer);
-            }
-            function lockSession() {
-                if (!currentUser) return;
-                locked = true;
-                document.getElementById('sessionOverlay').classList.add('show');
-                document.getElementById('mainContent').classList.add('blur-content');
-                document.getElementById('sessionPassword').value = '';
-                document.getElementById('sessionPassword').focus();
-                // stop activity timer during lock
-                clearTimeout(sessionTimer);
-                clearInterval(sessionTickTimer);
-            }
-            function unlockSession() {
-                const pass = document.getElementById('sessionPassword').value;
-                if (!currentUser) return;
-                // check password
-                const all = users(); const u = all.find(x => x.id === currentUser.id);
-                if (!u || u.passwordHash !== hash(pass)) {
-                    showToast('Incorrect password', 'error');
-                    document.getElementById('sessionPassword').value = '';
-                    document.getElementById('sessionPassword').focus();
-                    return;
-                }
-                hideSessionOverlay();
-                locked = false;
-                resetSessionTimer();
-            }
-            function hideSessionOverlay() {
-                document.getElementById('sessionOverlay').classList.remove('show');
-                document.getElementById('mainContent').classList.remove('blur-content');
-                document.getElementById('sessionPassword').value = '';
-            }
+            // Session timeout
+            function getTimeoutMs() { const mins = parseInt(localStorage.getItem(TIMEOUT_KEY) || '5') || 5; return mins * 60 * 1000; }
+            function resetSessionTimer() { if (!currentUser || locked) return; clearTimeout(sessionTimer); clearInterval(sessionTickTimer); sessionTimer = setTimeout(lockSession, getTimeoutMs()); }
+            function stopSessionTimer() { clearTimeout(sessionTimer); clearInterval(sessionTickTimer); }
+            function lockSession() { if (!currentUser) return; locked = true; document.getElementById('sessionOverlay').classList.add('show'); document.getElementById('mainContent').classList.add('blur-content'); document.getElementById('sessionPassword').value = ''; document.getElementById('sessionPassword').focus(); clearTimeout(sessionTimer); clearInterval(sessionTickTimer); }
+            function unlockSession() { const pass = document.getElementById('sessionPassword').value; if (!currentUser) return; const all = users(); const u = all.find(x => x.id === currentUser.id); if (!u || u.passwordHash !== hash(pass)) { showToast('Incorrect password', 'error'); document.getElementById('sessionPassword').value = ''; document.getElementById('sessionPassword').focus(); return; } hideSessionOverlay(); locked = false; resetSessionTimer(); }
+            function hideSessionOverlay() { document.getElementById('sessionOverlay').classList.remove('show'); document.getElementById('mainContent').classList.remove('blur-content'); document.getElementById('sessionPassword').value = ''; }
             window.unlockSession = unlockSession;
-            window.sessionLogout = function () {
-                hideSessionOverlay();
-                logout();
-            };
-
-            function saveTimeoutSetting() {
-                const val = parseInt(document.getElementById('timeoutMinutes').value) || 5;
-                localStorage.setItem(TIMEOUT_KEY, val);
-                resetSessionTimer();
-            }
+            window.sessionLogout = function () { hideSessionOverlay(); logout(); };
+            function saveTimeoutSetting() { const val = parseInt(document.getElementById('timeoutMinutes').value) || 5; localStorage.setItem(TIMEOUT_KEY, val); resetSessionTimer(); }
             window.saveTimeoutSetting = saveTimeoutSetting;
+            ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(ev => { document.addEventListener(ev, () => { if (currentUser && !locked && document.getElementById('appContainer').style.display !== 'none') { resetSessionTimer(); } }, { passive: true }); });
 
-            // Activity listeners
-            ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(ev => {
-                document.addEventListener(ev, () => {
-                    if (currentUser && !locked && document.getElementById('appContainer').style.display !== 'none') {
-                        resetSessionTimer();
-                    }
-                }, { passive: true });
-            });
-
-            // ---------- STARTUP & PAGE PERSISTENCE ----------
+            // Startup
             function startAppWithUser() {
                 document.getElementById('authContainer').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'flex';
@@ -1600,7 +1700,6 @@
                 document.getElementById('userAvatarLetter').textContent = currentUser.name.charAt(0).toUpperCase();
                 document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 const lastPage = localStorage.getItem(LAST_PAGE_KEY) || 'dashboard';
-                // Load timeout setting
                 const savedTimeout = localStorage.getItem(TIMEOUT_KEY) || '5';
                 const timeoutInput = document.getElementById('timeoutMinutes');
                 if (timeoutInput) timeoutInput.value = savedTimeout;
@@ -1612,19 +1711,13 @@
                 if (savedUserId) {
                     const users = JSON.parse(localStorage.getItem(APP_PREFIX + 'all_users') || '[]');
                     const user = users.find(u => u.id === savedUserId);
-                    if (user) {
-                        currentUser = user;
-                        startAppWithUser();
-                        return;
-                    } else {
-                        localStorage.removeItem(APP_PREFIX + 'current_user_id');
-                    }
+                    if (user) { currentUser = user; startAppWithUser(); return; }
+                    else localStorage.removeItem(APP_PREFIX + 'current_user_id');
                 }
                 document.getElementById('authContainer').style.display = 'flex';
                 document.getElementById('appContainer').style.display = 'none';
                 document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             }
-
             document.getElementById('loginForm').addEventListener('submit', function (e) {
                 e.preventDefault();
                 if (login(document.getElementById('loginEmail').value.trim(), document.getElementById('loginPassword').value)) {
@@ -1640,10 +1733,7 @@
                 if (!name) { showToast('Name required', 'warning'); return; }
                 if (password.length < 6) { showToast('Password min 6 chars', 'warning'); return; }
                 if (password !== confirm) { showToast('Passwords mismatch', 'warning'); return; }
-                if (register(name, email, password)) {
-                    showLogin();
-                    document.getElementById('loginEmail').value = email;
-                }
+                if (register(name, email, password)) { showLogin(); document.getElementById('loginEmail').value = email; }
             });
             document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => l.addEventListener('click', function () {
                 const page = this.getAttribute('data-page');
