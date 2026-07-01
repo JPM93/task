@@ -1585,14 +1585,13 @@
             function refreshTeam() { const members = getTeam(); const grid = document.getElementById('teamGrid'); if (!members.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-user-group"></i><p>No team members yet.</p></div>'; return; } grid.innerHTML = members.map(m => `<div class="col-md-3 col-sm-6"><div class="card-custom text-center h-100"><div class="user-avatar mx-auto mb-2" style="width:50px;height:50px;font-size:1.2rem;">${m.name.charAt(0).toUpperCase()}</div><h6 class="fw-bold mb-0">${escapeHtml(m.name)}</h6><small class="text-muted">${escapeHtml(m.role || 'Team Member')}</small><br><small>${escapeHtml(m.email || '')}</small><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openTeamMemberModal('edit','${m.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteTeamMember('${m.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
             function refreshNotes() { const notes = getNotes(); const grid = document.getElementById('notesGrid'); if (!notes.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-sticky-note"></i><p>No notes yet.</p></div>'; return; } grid.innerHTML = notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(n => `<div class="col-md-4 col-sm-6"><div class="card-custom h-100"><span class="badge bg-secondary mb-1">${n.category || 'general'}</span><h6 class="fw-bold">${escapeHtml(n.title || 'Untitled')}</h6><p class="text-muted small rich-text-content" style="white-space:pre-wrap;">${formatPreview(n.content || '', 150)}</p><small class="text-muted">Updated: ${formatDateTime(n.updatedAt)}</small><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openNoteModal('edit','${n.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-info" onclick="viewNoteFullscreen('${n.id}')"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteNote('${n.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
 
-            // EOD Report Generation (FIXED: blocked tasks now excluded)
+            // EOD Report Generation (blocked tasks excluded)
             window.generateEODReport = function () {
                 const today = new Date().toISOString().split('T')[0];
                 const allTasks = getTasks();
                 const userName = currentUser ? currentUser.name : 'User';
                 const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-                // Completed today: status completed and (audit log indicates completed today or dueDate today)
                 const completedToday = allTasks.filter(t => {
                     if (t.status !== 'completed') return false;
                     if (t.auditLog && t.auditLog.length) {
@@ -1602,7 +1601,6 @@
                     return t.dueDate === today;
                 });
 
-                // Pending/In Progress: not completed, NOT blocked, not future beyond today, dueDate <= today
                 const pendingToday = allTasks.filter(t => {
                     if (t.status === 'completed' || t.status === 'blocked') return false;
                     if (t.isFuture && t.dueDate > today) return false;
@@ -1639,34 +1637,50 @@
                 showToast('EOD Report generated!', 'success');
             };
 
-            // Copy functions
+            // ── COPY HELPERS ──────────────────────────────────
+            function copyText(text, label) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => showToast(`📋 ${label}`, 'success')).catch(() => fallbackCopy(text));
+                } else {
+                    fallbackCopy(text);
+                }
+            }
+            function fallbackCopy(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.top = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try { document.execCommand('copy'); showToast('📋 Copied!', 'success'); } catch (e) { showToast('Copy failed', 'error'); }
+                document.body.removeChild(textarea);
+            }
             function getPlainReport() {
                 const content = document.getElementById('eodReportContent').textContent;
                 if (content.includes('Click "Generate')) { showToast('Please generate the report first.', 'warning'); return null; }
                 return content;
             }
-            window.copyEODReport = function () {
-                const content = getPlainReport();
-                if (!content) return;
-                navigator.clipboard.writeText(content).then(() => showToast('📋 Copied to Clipboard!', 'success')).catch(() => showToast('Copy failed', 'error'));
+
+            window.copyEODReport = () => {
+                const text = getPlainReport();
+                if (!text) return;
+                copyText(text, 'Copied to Clipboard!');
             };
             document.getElementById('slackCopyBtn').addEventListener('click', () => {
-                const content = getPlainReport();
-                if (!content) return;
-                navigator.clipboard.writeText('```\n' + content + '\n```').then(() => showToast('📋 Slack code block copied!', 'success')).catch(() => showToast('Copy failed', 'error'));
+                const text = getPlainReport();
+                if (!text) return;
+                copyText('```\n' + text + '\n```', 'Slack code block copied!');
             });
             document.getElementById('whatsappCopyBtn').addEventListener('click', () => {
-                const content = getPlainReport();
-                if (!content) return;
-                // Format with bold headings for WhatsApp
-                const waText = content.replace(/^(📧|👤|✅|📋|🔗|📊).*$/gm, (line) => `*${line}*`);
-                navigator.clipboard.writeText(waText).then(() => showToast('📋 WhatsApp text copied!', 'success')).catch(() => showToast('Copy failed', 'error'));
+                const text = getPlainReport();
+                if (!text) return;
+                const waText = text.replace(/^(📧|👤|✅|📋|🔗|📊).*$/gm, line => `*${line}*`);
+                copyText(waText, 'WhatsApp text copied!');
             });
             document.getElementById('mailCopyBtn').addEventListener('click', () => {
-                const content = getPlainReport();
-                if (!content) return;
-                // Plain text is perfect for email
-                navigator.clipboard.writeText(content).then(() => showToast('📋 Mail text copied!', 'success')).catch(() => showToast('Copy failed', 'error'));
+                const text = getPlainReport();
+                if (!text) return;
+                copyText(text, 'Mail text copied!');
             });
 
             // Export/Import/Clear
