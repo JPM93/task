@@ -640,6 +640,65 @@
         .drive-status-error {
             color: #ef4444;
         }
+
+        /* Live formatting preview (Slack-style) */
+        .format-preview-wrap {
+            margin-top: 6px;
+        }
+
+        .format-preview-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .format-preview-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+            min-height: 40px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #334155;
+        }
+
+        .format-preview-box:empty::before,
+        .format-preview-box .fp-empty {
+            content: '';
+        }
+
+        .format-preview-box code {
+            background: #e2e8f0;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .rich-text-content strong {
+            font-weight: 700;
+        }
+
+        .rich-text-content code {
+            background: #e2e8f0;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .fullscreen-content code {
+            background: rgba(255, 255, 255, 0.12);
+            color: #7dd3fc;
+        }
     </style>
 </head>
 
@@ -949,7 +1008,13 @@
                                     onclick="formatText('underline')"><u>U</u></button><button type="button"
                                     onclick="formatText('strikethrough')"><s>S</s></button><button type="button"
                                     onclick="formatText('code')"><i class="fas fa-code"></i></button></div><textarea
-                                class="form-control" id="taskDescription" rows="3"></textarea>
+                                class="form-control" id="taskDescription" rows="3"
+                                oninput="renderTaskDescPreview()"></textarea>
+                            <div class="format-preview-wrap">
+                                <span class="format-preview-label"><i class="fas fa-eye me-1"></i>Live Preview</span>
+                                <div class="format-preview-box rich-text-content" id="taskDescPreview"><span
+                                        class="text-muted">Nothing to preview yet…</span></div>
+                            </div>
                         </div>
                         <div class="col-md-4"><label class="form-label fw-semibold">Due Date *</label><input type="date"
                                 class="form-control" id="taskDueDate"></div>
@@ -1065,7 +1130,13 @@
                                 onclick="formatNoteText('underline')"><u>U</u></button><button type="button"
                                 onclick="formatNoteText('strikethrough')"><s>S</s></button><button type="button"
                                 onclick="formatNoteText('code')"><i class="fas fa-code"></i></button></div><textarea
-                            class="form-control" id="noteContent" rows="6" placeholder="Write your note..."></textarea>
+                            class="form-control" id="noteContent" rows="6" placeholder="Write your note..."
+                            oninput="renderNotePreview()"></textarea>
+                        <div class="format-preview-wrap">
+                            <span class="format-preview-label"><i class="fas fa-eye me-1"></i>Live Preview</span>
+                            <div class="format-preview-box rich-text-content" id="notePreview"><span
+                                    class="text-muted">Nothing to preview yet…</span></div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer"><button class="btn btn-outline-custom"
@@ -1081,7 +1152,7 @@
                 <h5 id="fullscreenNoteTitle" class="fw-bold text-white mb-0"></h5><button class="btn btn-sm btn-light"
                     onclick="closeNoteFullscreen()">✕ Close</button>
             </div>
-            <div id="fullscreenNoteContent"></div>
+            <div id="fullscreenNoteContent" class="rich-text-content"></div>
         </div>
     </div>
 
@@ -1144,8 +1215,45 @@
             function saveTeam(m) { save('teamMembers', m); }
             function saveNotes(n) { save('notes', n); }
 
-            window.formatText = function (cmd) { const ta = document.getElementById('taskDescription'); const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e); let fmt = '', off = 0; switch (cmd) { case 'bold': fmt = `**${sel}**`; off = 2; break; case 'italic': fmt = `*${sel}*`; off = 1; break; case 'underline': fmt = `<u>${sel}</u>`; off = 3; break; case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break; case 'code': fmt = `\`${sel}\``; off = 1; break; } ta.value = ta.value.substring(0, s) + fmt + ta.value.substring(e); ta.focus(); ta.setSelectionRange(s + off, s + off + sel.length); };
-            window.formatNoteText = function (cmd) { const ta = document.getElementById('noteContent'); const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e); let fmt = '', off = 0; switch (cmd) { case 'bold': fmt = `**${sel}**`; off = 2; break; case 'italic': fmt = `*${sel}*`; off = 1; break; case 'underline': fmt = `<u>${sel}</u>`; off = 3; break; case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break; case 'code': fmt = `\`${sel}\``; off = 1; break; } ta.value = ta.value.substring(0, s) + fmt + ta.value.substring(e); ta.focus(); ta.setSelectionRange(s + off, s + off + sel.length); };
+            window.formatText = function (cmd) { const ta = document.getElementById('taskDescription'); const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e); let fmt = '', off = 0; switch (cmd) { case 'bold': fmt = `**${sel}**`; off = 2; break; case 'italic': fmt = `*${sel}*`; off = 1; break; case 'underline': fmt = `__${sel}__`; off = 2; break; case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break; case 'code': fmt = `\`${sel}\``; off = 1; break; } ta.value = ta.value.substring(0, s) + fmt + ta.value.substring(e); ta.focus(); ta.setSelectionRange(s + off, s + off + sel.length); renderTaskDescPreview(); };
+            window.formatNoteText = function (cmd) { const ta = document.getElementById('noteContent'); const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e); let fmt = '', off = 0; switch (cmd) { case 'bold': fmt = `**${sel}**`; off = 2; break; case 'italic': fmt = `*${sel}*`; off = 1; break; case 'underline': fmt = `__${sel}__`; off = 2; break; case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break; case 'code': fmt = `\`${sel}\``; off = 1; break; } ta.value = ta.value.substring(0, s) + fmt + ta.value.substring(e); ta.focus(); ta.setSelectionRange(s + off, s + off + sel.length); renderNotePreview(); };
+
+            // ---- Slack-style rich text formatting engine ----
+            // Supported syntax: **bold**, *italic*, __underline__, ~~strikethrough~~, `code`
+            function parseFormatting(raw) {
+                if (!raw) return '';
+                let html = escapeHtml(raw);
+                // code first so markers inside code aren't re-processed
+                html = html.replace(/`([^`]+?)`/g, '<code>$1</code>');
+                // bold
+                html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+                // underline
+                html = html.replace(/__([^_]+?)__/g, '<u>$1</u>');
+                // strikethrough
+                html = html.replace(/~~([^~]+?)~~/g, '<del>$1</del>');
+                // italic (single asterisk, avoid touching remaining ** which are already consumed)
+                html = html.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
+                // line breaks
+                html = html.replace(/\n/g, '<br>');
+                return html;
+            }
+            window.parseFormatting = parseFormatting;
+            function formatPreview(raw, maxLen) {
+                if (!raw) return '';
+                let text = raw;
+                if (maxLen && text.length > maxLen) text = text.substring(0, maxLen) + '…';
+                return parseFormatting(text);
+            }
+            window.renderTaskDescPreview = function () {
+                const val = document.getElementById('taskDescription').value;
+                const box = document.getElementById('taskDescPreview');
+                box.innerHTML = val.trim() ? parseFormatting(val) : '<span class="text-muted">Nothing to preview yet…</span>';
+            };
+            window.renderNotePreview = function () {
+                const val = document.getElementById('noteContent').value;
+                const box = document.getElementById('notePreview');
+                box.innerHTML = val.trim() ? parseFormatting(val) : '<span class="text-muted">Nothing to preview yet…</span>';
+            };
 
             let currentSubtasks = [];
             window.addSubtask = function () { const inp = document.getElementById('newSubtaskInput'); const title = inp.value.trim(); if (!title) return; currentSubtasks.push({ id: 'sub_' + Date.now() + Math.random().toString(36).substr(2, 5), title, status: 'pending', createdAt: new Date().toISOString() }); inp.value = ''; renderSubtasks(); };
@@ -1166,7 +1274,7 @@
                 document.getElementById('taskPriority').value = 'medium'; document.getElementById('taskDueDate').value = new Date().toISOString().split('T')[0];
                 document.getElementById('taskStatus').value = 'pending'; document.getElementById('taskOriginalStatus').value = 'pending';
                 document.getElementById('taskIsFuture').value = 'no'; document.getElementById('statusCommentRow').style.display = 'none';
-                populateCheckboxes(); renderSubtasks(); renderAuditLog();
+                populateCheckboxes(); renderSubtasks(); renderAuditLog(); renderTaskDescPreview();
                 if (mode === 'edit' && taskId) {
                     const task = getTask(taskId); if (task) {
                         document.getElementById('taskEditId').value = task.id; document.getElementById('taskModalTitle').textContent = 'Edit Task';
@@ -1176,7 +1284,7 @@
                         document.getElementById('taskIsFuture').value = task.isFuture ? 'yes' : 'no';
                         if (task.subtasks) currentSubtasks = JSON.parse(JSON.stringify(task.subtasks));
                         if (task.auditLog) currentAuditLog = JSON.parse(JSON.stringify(task.auditLog));
-                        populateCheckboxes(task.assignedTo || [], task.projectIds || []); renderSubtasks(); renderAuditLog();
+                        populateCheckboxes(task.assignedTo || [], task.projectIds || []); renderSubtasks(); renderAuditLog(); renderTaskDescPreview();
                     }
                 }
                 if (mode === 'today') { document.getElementById('taskDueDate').value = new Date().toISOString().split('T')[0]; document.getElementById('taskIsFuture').value = 'no'; }
@@ -1192,10 +1300,10 @@
             window.openTeamMemberModal = function (mode, id) { document.getElementById('teamEditId').value = ''; document.getElementById('teamName').value = ''; document.getElementById('teamEmail').value = ''; document.getElementById('teamRole').value = ''; if (mode === 'edit' && id) { const m = getMember(id); if (m) { document.getElementById('teamEditId').value = m.id; document.getElementById('teamName').value = m.name; document.getElementById('teamEmail').value = m.email || ''; document.getElementById('teamRole').value = m.role || ''; } } new bootstrap.Modal(document.getElementById('teamMemberModal')).show(); };
             window.saveTeamMember = function () { const name = document.getElementById('teamName').value.trim(); if (!name) { showToast('Name required.', 'warning'); return; } const members = getTeam(); const editId = document.getElementById('teamEditId').value; const data = { id: editId || 'mem_' + Date.now(), name, email: document.getElementById('teamEmail').value.trim(), role: document.getElementById('teamRole').value.trim(), createdAt: editId ? (getMember(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString() }; if (editId) { const idx = members.findIndex(m => m.id === editId); if (idx >= 0) members[idx] = data; } else members.push(data); saveTeam(members); bootstrap.Modal.getInstance(document.getElementById('teamMemberModal')).hide(); showToast('Team member saved!', 'success'); refreshCurrentPage(); };
             window.deleteTeamMember = function (id) { if (!confirm('Delete member?')) return; saveTeam(getTeam().filter(m => m.id !== id)); const tasks = getTasks().map(t => { if (t.assignedTo) t.assignedTo = t.assignedTo.filter(uid => uid !== id); return t; }); saveTasks(tasks); showToast('Member deleted.', 'success'); refreshCurrentPage(); };
-            window.openNoteModal = function (mode, id) { document.getElementById('noteEditId').value = ''; document.getElementById('noteTitle').value = ''; document.getElementById('noteContent').value = ''; document.getElementById('noteCategory').value = 'general'; if (mode === 'edit' && id) { const notes = getNotes(); const n = notes.find(nt => nt.id === id); if (n) { document.getElementById('noteEditId').value = n.id; document.getElementById('noteTitle').value = n.title || ''; document.getElementById('noteContent').value = n.content || ''; document.getElementById('noteCategory').value = n.category || 'general'; } } new bootstrap.Modal(document.getElementById('noteModal')).show(); };
+            window.openNoteModal = function (mode, id) { document.getElementById('noteEditId').value = ''; document.getElementById('noteTitle').value = ''; document.getElementById('noteContent').value = ''; document.getElementById('noteCategory').value = 'general'; renderNotePreview(); if (mode === 'edit' && id) { const notes = getNotes(); const n = notes.find(nt => nt.id === id); if (n) { document.getElementById('noteEditId').value = n.id; document.getElementById('noteTitle').value = n.title || ''; document.getElementById('noteContent').value = n.content || ''; document.getElementById('noteCategory').value = n.category || 'general'; renderNotePreview(); } } new bootstrap.Modal(document.getElementById('noteModal')).show(); };
             window.saveNote = function () { const content = document.getElementById('noteContent').value.trim(); const title = document.getElementById('noteTitle').value.trim(); if (!content && !title) { showToast('Please add some content.', 'warning'); return; } const notes = getNotes(); const editId = document.getElementById('noteEditId').value; const data = { id: editId || 'note_' + Date.now(), title: title || 'Untitled', content, category: document.getElementById('noteCategory').value, createdAt: editId ? (notes.find(n => n.id === editId)?.createdAt || new Date().toISOString()) : new Date().toISOString(), updatedAt: new Date().toISOString() }; if (editId) { const idx = notes.findIndex(n => n.id === editId); if (idx >= 0) notes[idx] = data; } else notes.push(data); saveNotes(notes); bootstrap.Modal.getInstance(document.getElementById('noteModal')).hide(); showToast('Note saved!', 'success'); refreshCurrentPage(); };
             window.deleteNote = function (id) { if (!confirm('Delete note?')) return; saveNotes(getNotes().filter(n => n.id !== id)); showToast('Note deleted.', 'success'); refreshCurrentPage(); };
-            window.viewNoteFullscreen = function (noteId) { const notes = getNotes(); const note = notes.find(n => n.id === noteId); if (!note) return; document.getElementById('fullscreenNoteTitle').textContent = note.title || 'Untitled'; document.getElementById('fullscreenNoteContent').textContent = note.content || ''; document.getElementById('noteFullscreenOverlay').style.display = 'flex'; };
+            window.viewNoteFullscreen = function (noteId) { const notes = getNotes(); const note = notes.find(n => n.id === noteId); if (!note) return; document.getElementById('fullscreenNoteTitle').textContent = note.title || 'Untitled'; document.getElementById('fullscreenNoteContent').innerHTML = parseFormatting(note.content || ''); document.getElementById('noteFullscreenOverlay').style.display = 'flex'; };
             window.closeNoteFullscreen = function () { document.getElementById('noteFullscreenOverlay').style.display = 'none'; };
 
             // GOOGLE DRIVE FUNCTIONS
@@ -1427,7 +1535,7 @@
                 if (!sorted.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><i class="fas fa-inbox"></i><p>No tasks yet.</p></td></tr>'; return; }
                 tbody.innerHTML = sorted.map(t => `
                 <tr class="task-row ${t.priority}-row" onclick="openTaskModal('edit','${t.id}')">
-                    <td><strong>${escapeHtml(t.title)}</strong>${getSubtaskBadge(t)}<br><small class="text-muted">${escapeHtml(t.description || '').substring(0, 60)}</small></td>
+                    <td><strong>${escapeHtml(t.title)}</strong>${getSubtaskBadge(t)}<br><small class="text-muted rich-text-content">${formatPreview(t.description || '', 60)}</small></td>
                     <td><span class="priority-badge priority-${t.priority}">${t.priority.toUpperCase()}</span></td>
                     <td>${formatDate(t.dueDate)} ${t.isFuture ? '<span class="badge bg-info">Future</span>' : ''}</td>
                     <td><span class="badge bg-${t.status === 'completed' ? 'success' : t.status === 'in-progress' ? 'primary' : t.status === 'blocked' ? 'danger' : 'warning'}">${t.status}</span></td>
@@ -1441,7 +1549,7 @@
                     if (t.assignedTo && t.assignedTo.length) t.assignedTo.forEach(uid => { const m = getMember(uid); if (m) conns.push(`<span class="task-connection-tag user">👤 ${escapeHtml(m.name)}</span>`); });
                     if (t.projectIds && t.projectIds.length) t.projectIds.forEach(pid => { const p = getProject(pid); if (p) conns.push(`<span class="task-connection-tag project">📁 ${escapeHtml(p.name)}</span>`); });
                     return `<tr class="task-row ${t.priority}-row">
-                        <td><strong>${escapeHtml(t.title)}</strong>${getSubtaskBadge(t)}<br><small>${escapeHtml(t.description || '').substring(0, 50)}</small></td>
+                        <td><strong>${escapeHtml(t.title)}</strong>${getSubtaskBadge(t)}<br><small class="rich-text-content">${formatPreview(t.description || '', 50)}</small></td>
                         <td><span class="priority-badge priority-${t.priority}">${t.priority.toUpperCase()}</span></td>
                         <td>${formatDate(t.dueDate)} ${t.isFuture ? '<span class="badge bg-info">Future</span>' : ''}</td>
                         <td>${conns.length ? conns.join(' ') : '<small class="text-muted">None</small>'}</td>
@@ -1459,7 +1567,7 @@
                     if (t.assignedTo && t.assignedTo.length) t.assignedTo.forEach(uid => { const m = getMember(uid); if (m) conns.push(`<span class="task-connection-tag user">👤 ${escapeHtml(m.name)}</span>`); });
                     if (t.projectIds && t.projectIds.length) t.projectIds.forEach(pid => { const p = getProject(pid); if (p) conns.push(`<span class="task-connection-tag project">📁 ${escapeHtml(p.name)}</span>`); });
                     return `<div class="card-custom task-row ${t.priority}-row" style="cursor:pointer;" onclick="openTaskModal('edit','${t.id}')">
-                        <div class="d-flex justify-content-between align-items-start flex-wrap"><div><h6 class="fw-bold mb-1">${escapeHtml(t.title)} ${getSubtaskBadge(t)}</h6><small class="text-muted">${escapeHtml(t.description || '').substring(0, 80)}</small></div><span class="priority-badge priority-${t.priority}">${t.priority.toUpperCase()}</span></div>
+                        <div class="d-flex justify-content-between align-items-start flex-wrap"><div><h6 class="fw-bold mb-1">${escapeHtml(t.title)} ${getSubtaskBadge(t)}</h6><small class="text-muted rich-text-content">${formatPreview(t.description || '', 80)}</small></div><span class="priority-badge priority-${t.priority}">${t.priority.toUpperCase()}</span></div>
                         <div class="mt-2 d-flex gap-2 flex-wrap align-items-center"><span class="badge bg-${t.status === 'completed' ? 'success' : t.status === 'in-progress' ? 'primary' : t.status === 'blocked' ? 'danger' : 'warning'}">${t.status}</span><small class="text-muted">📅 ${formatDate(t.dueDate)}</small> ${conns.join(' ')}</div>
                         <div class="mt-2"><button class="btn btn-sm btn-outline-primary me-1" onclick="event.stopPropagation();openTaskModal('edit','${t.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation();deleteTask('${t.id}')"><i class="fas fa-trash"></i></button></div>
                     </div>`;
@@ -1467,7 +1575,7 @@
             }
             function refreshProjects() { const projects = getProjects(); const grid = document.getElementById('projectsGrid'); if (!projects.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-folder-open"></i><p>No projects yet.</p></div>'; return; } grid.innerHTML = projects.map(p => `<div class="col-md-4 col-sm-6"><div class="card-custom h-100"><h6 class="fw-bold">📁 ${escapeHtml(p.name)}</h6><p class="text-muted small">${escapeHtml(p.description || 'No description')}</p><span class="badge bg-${p.status === 'active' ? 'success' : p.status === 'completed' ? 'secondary' : 'warning'}">${p.status}</span><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openProjectModal('edit','${p.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
             function refreshTeam() { const members = getTeam(); const grid = document.getElementById('teamGrid'); if (!members.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-user-group"></i><p>No team members yet.</p></div>'; return; } grid.innerHTML = members.map(m => `<div class="col-md-3 col-sm-6"><div class="card-custom text-center h-100"><div class="user-avatar mx-auto mb-2" style="width:50px;height:50px;font-size:1.2rem;">${m.name.charAt(0).toUpperCase()}</div><h6 class="fw-bold mb-0">${escapeHtml(m.name)}</h6><small class="text-muted">${escapeHtml(m.role || 'Team Member')}</small><br><small>${escapeHtml(m.email || '')}</small><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openTeamMemberModal('edit','${m.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteTeamMember('${m.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
-            function refreshNotes() { const notes = getNotes(); const grid = document.getElementById('notesGrid'); if (!notes.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-sticky-note"></i><p>No notes yet.</p></div>'; return; } grid.innerHTML = notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(n => `<div class="col-md-4 col-sm-6"><div class="card-custom h-100"><span class="badge bg-secondary mb-1">${n.category || 'general'}</span><h6 class="fw-bold">${escapeHtml(n.title || 'Untitled')}</h6><p class="text-muted small" style="white-space:pre-wrap;">${escapeHtml(n.content || '').substring(0, 150)}</p><small class="text-muted">Updated: ${formatDateTime(n.updatedAt)}</small><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openNoteModal('edit','${n.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-info" onclick="viewNoteFullscreen('${n.id}')"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteNote('${n.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
+            function refreshNotes() { const notes = getNotes(); const grid = document.getElementById('notesGrid'); if (!notes.length) { grid.innerHTML = '<div class="col-12 empty-state"><i class="fas fa-sticky-note"></i><p>No notes yet.</p></div>'; return; } grid.innerHTML = notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(n => `<div class="col-md-4 col-sm-6"><div class="card-custom h-100"><span class="badge bg-secondary mb-1">${n.category || 'general'}</span><h6 class="fw-bold">${escapeHtml(n.title || 'Untitled')}</h6><p class="text-muted small rich-text-content" style="white-space:pre-wrap;">${formatPreview(n.content || '', 150)}</p><small class="text-muted">Updated: ${formatDateTime(n.updatedAt)}</small><div class="mt-2"><button class="btn btn-sm btn-outline-primary" onclick="openNoteModal('edit','${n.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-outline-info" onclick="viewNoteFullscreen('${n.id}')"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-outline-danger" onclick="deleteNote('${n.id}')"><i class="fas fa-trash"></i></button></div></div></div>`).join(''); }
 
             window.generateEODReport = function () {
                 const today = new Date().toISOString().split('T')[0]; const allTasks = getTasks();
