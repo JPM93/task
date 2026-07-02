@@ -548,6 +548,7 @@
             background: #f8f9fa;
             cursor: pointer;
             color: #000;
+            line-height: 1.2;
         }
 
         .format-toolbar button:hover {
@@ -729,6 +730,24 @@
             text-decoration: underline;
         }
 
+        .rich-text-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 6px 0;
+        }
+
+        .rich-text-content table th,
+        .rich-text-content table td {
+            border: 1px solid #ddd;
+            padding: 4px 8px;
+            text-align: left;
+        }
+
+        .rich-text-content table th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
         .fullscreen-content code {
             background: rgba(255, 255, 255, 0.12);
             color: #7dd3fc;
@@ -743,7 +762,6 @@
             color: #7dd3fc;
         }
 
-        /* Session lock overlay */
         .session-overlay {
             position: fixed;
             top: 0;
@@ -1158,7 +1176,15 @@
                                 <button type="button" onclick="formatText('code')" title="Code"><i
                                         class="fas fa-code"></i></button>
                                 <button type="button" onclick="formatText('highlight')" title="Highlight">🖍</button>
-                                <button type="button" onclick="formatText('heading')" title="Heading">H</button>
+                                <button type="button" onclick="formatText('subscript')"
+                                    title="Subscript">X<sub>2</sub></button>
+                                <button type="button" onclick="formatText('superscript')"
+                                    title="Superscript">X<sup>2</sup></button>
+                                <button type="button" onclick="formatText('h1')" title="Heading 1">H1</button>
+                                <button type="button" onclick="formatText('h2')" title="Heading 2">H2</button>
+                                <button type="button" onclick="formatText('h3')" title="Heading 3">H3</button>
+                                <button type="button" onclick="formatText('hr')" title="Horizontal Line">―</button>
+                                <button type="button" onclick="formatText('table')" title="Insert Table">⊞</button>
                                 <button type="button" onclick="formatText('quote')" title="Quote"><i
                                         class="fas fa-quote-left"></i></button>
                                 <button type="button" onclick="formatText('bullet')" title="Bullet List"><i
@@ -1167,8 +1193,6 @@
                                         class="fas fa-list-ol"></i></button>
                                 <button type="button" onclick="formatText('link')" title="Link"><i
                                         class="fas fa-link"></i></button>
-                                <button type="button" onclick="formatText('superscript')"
-                                    title="Superscript">x<sup>2</sup></button>
                             </div>
                             <textarea class="form-control" id="taskDescription" rows="3"
                                 oninput="renderTaskDescPreview()"></textarea>
@@ -1293,7 +1317,15 @@
                             <button type="button" onclick="formatNoteText('code')" title="Code"><i
                                     class="fas fa-code"></i></button>
                             <button type="button" onclick="formatNoteText('highlight')" title="Highlight">🖍</button>
-                            <button type="button" onclick="formatNoteText('heading')" title="Heading">H</button>
+                            <button type="button" onclick="formatNoteText('subscript')"
+                                title="Subscript">X<sub>2</sub></button>
+                            <button type="button" onclick="formatNoteText('superscript')"
+                                title="Superscript">X<sup>2</sup></button>
+                            <button type="button" onclick="formatNoteText('h1')" title="Heading 1">H1</button>
+                            <button type="button" onclick="formatNoteText('h2')" title="Heading 2">H2</button>
+                            <button type="button" onclick="formatNoteText('h3')" title="Heading 3">H3</button>
+                            <button type="button" onclick="formatNoteText('hr')" title="Horizontal Line">―</button>
+                            <button type="button" onclick="formatNoteText('table')" title="Insert Table">⊞</button>
                             <button type="button" onclick="formatNoteText('quote')" title="Quote"><i
                                     class="fas fa-quote-left"></i></button>
                             <button type="button" onclick="formatNoteText('bullet')" title="Bullet List"><i
@@ -1302,8 +1334,6 @@
                                     class="fas fa-list-ol"></i></button>
                             <button type="button" onclick="formatNoteText('link')" title="Link"><i
                                     class="fas fa-link"></i></button>
-                            <button type="button" onclick="formatNoteText('superscript')"
-                                title="Superscript">x<sup>2</sup></button>
                         </div>
                         <textarea class="form-control" id="noteContent" rows="6" placeholder="Write your note..."
                             oninput="renderNotePreview()"></textarea>
@@ -1402,7 +1432,7 @@
             function saveTeam(m) { save('teamMembers', m); }
             function saveNotes(n) { save('notes', n); }
 
-            // Formatting helpers
+            // Formatting helpers – expanded
             function applyFormat(textareaId, cmd, renderFn) {
                 const ta = document.getElementById(textareaId);
                 const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.substring(s, e);
@@ -1414,16 +1444,38 @@
                     case 'strikethrough': fmt = `~~${sel}~~`; off = 2; break;
                     case 'code': fmt = '`' + sel + '`'; off = 1; break;
                     case 'highlight': fmt = `==${sel}==`; off = 2; break;
+                    case 'subscript': fmt = `~${sel}~`; off = 1; break;
                     case 'superscript': fmt = `^${sel}^`; off = 1; break;
                     case 'link': {
                         const url = prompt('Enter URL:', 'https://');
                         if (!url) return;
                         fmt = `[${sel || 'link text'}](${url})`; off = 1; break;
                     }
-                    case 'heading': isLinePrefix = true; prefix = '# '; break;
+                    case 'h1': isLinePrefix = true; prefix = '# '; break;
+                    case 'h2': isLinePrefix = true; prefix = '## '; break;
+                    case 'h3': isLinePrefix = true; prefix = '### '; break;
                     case 'quote': isLinePrefix = true; prefix = '> '; break;
                     case 'bullet': isLinePrefix = true; prefix = '- '; break;
                     case 'numbered': isLinePrefix = true; prefix = '1. '; break;
+                    case 'hr': {
+                        const value = ta.value;
+                        const lineStart = value.lastIndexOf('\n', s - 1) + 1;
+                        // insert a new line with --- if cursor not at start of line
+                        const newLine = (lineStart < s ? '\n' : '') + '---\n';
+                        ta.value = value.substring(0, s) + newLine + value.substring(s);
+                        ta.focus();
+                        ta.setSelectionRange(s + newLine.length, s + newLine.length);
+                        renderFn();
+                        return;
+                    }
+                    case 'table': {
+                        const tableTemplate = `\n| Header 1 | Header 2 |\n|----------|----------|\n| Cell     | Cell     |\n`;
+                        ta.value = ta.value.substring(0, s) + tableTemplate + ta.value.substring(e);
+                        ta.focus();
+                        ta.setSelectionRange(s + 2, s + 2);
+                        renderFn();
+                        return;
+                    }
                 }
                 if (isLinePrefix) {
                     const value = ta.value;
@@ -1451,25 +1503,69 @@
                 out = out.replace(/~~([^~]+?)~~/g, '<del>$1</del>');
                 out = out.replace(/==([^=]+?)==/g, '<mark>$1</mark>');
                 out = out.replace(/\^([^\^]+?)\^/g, '<sup>$1</sup>');
+                out = out.replace(/~([^~]+?)~/g, '<sub>$1</sub>');
                 out = out.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
                 return out;
             }
+
             function parseFormatting(raw) {
                 if (!raw) return '';
                 const lines = raw.split('\n');
-                let html = '', listType = null;
+                let html = '', listType = null, tableRows = [], inTable = false;
                 function closeList() { if (listType) { html += listType === 'ul' ? '</ul>' : '</ol>'; listType = null; } }
+                function flushTable() {
+                    if (tableRows.length > 1) {
+                        const header = tableRows[0];
+                        const align = tableRows[1]; // separator line
+                        html += '<table><thead><tr>';
+                        header.forEach(h => html += `<th>${applyInline(h.trim())}</th>`);
+                        html += '</tr></thead><tbody>';
+                        for (let i = 2; i < tableRows.length; i++) {
+                            html += '<tr>';
+                            tableRows[i].forEach(cell => html += `<td>${applyInline(cell.trim())}</td>`);
+                            html += '</tr>';
+                        }
+                        html += '</tbody></table>';
+                    }
+                    tableRows = [];
+                    inTable = false;
+                }
                 lines.forEach(line => {
-                    const headingMatch = line.match(/^#\s+(.*)$/);
-                    const quoteMatch = line.match(/^>\s+(.*)$/);
-                    const bulletMatch = line.match(/^[-*]\s+(.*)$/);
-                    const numberedMatch = line.match(/^\d+\.\s+(.*)$/);
-                    if (headingMatch) { closeList(); html += `<div class="rt-heading">${applyInline(headingMatch[1])}</div>`; }
-                    else if (quoteMatch) { closeList(); html += `<blockquote class="rt-quote">${applyInline(quoteMatch[1])}</blockquote>`; }
-                    else if (bulletMatch) { if (listType !== 'ul') { closeList(); html += '<ul class="rt-list">'; listType = 'ul'; } html += `<li>${applyInline(bulletMatch[1])}</li>`; }
-                    else if (numberedMatch) { if (listType !== 'ol') { closeList(); html += '<ol class="rt-list">'; listType = 'ol'; } html += `<li>${applyInline(numberedMatch[1])}</li>`; }
-                    else { closeList(); html += line.trim() === '' ? '<br>' : applyInline(line) + '<br>'; }
+                    if (line.match(/^\|/)) {
+                        closeList();
+                        if (!inTable) inTable = true;
+                        tableRows.push(line.split('|').filter(c => c !== '').map(c => c.trim()));
+                    } else {
+                        if (inTable) flushTable();
+                        const headingMatch = line.match(/^###\s+(.*)$/) || line.match(/^##\s+(.*)$/) || line.match(/^#\s+(.*)$/);
+                        if (headingMatch) {
+                            closeList();
+                            const level = line.match(/^#+/)[0].length;
+                            html += `<div class="rt-heading" style="font-size:${1.3 - (level - 1) * 0.1}em;">${applyInline(headingMatch[1])}</div>`;
+                        }
+                        else if (line.match(/^>\s+(.*)$/)) {
+                            closeList();
+                            html += `<blockquote class="rt-quote">${applyInline(line.replace(/^>\s*/, ''))}</blockquote>`;
+                        }
+                        else if (line.match(/^[-*]\s+(.*)$/)) {
+                            if (listType !== 'ul') { closeList(); html += '<ul class="rt-list">'; listType = 'ul'; }
+                            html += `<li>${applyInline(line.replace(/^[-*]\s*/, ''))}</li>`;
+                        }
+                        else if (line.match(/^\d+\.\s+(.*)$/)) {
+                            if (listType !== 'ol') { closeList(); html += '<ol class="rt-list">'; listType = 'ol'; }
+                            html += `<li>${applyInline(line.replace(/^\d+\.\s*/, ''))}</li>`;
+                        }
+                        else if (line.trim() === '---') {
+                            closeList();
+                            html += '<hr>';
+                        }
+                        else {
+                            closeList();
+                            html += line.trim() === '' ? '<br>' : applyInline(line) + '<br>';
+                        }
+                    }
                 });
+                if (inTable) flushTable();
                 closeList();
                 return html;
             }
@@ -1601,7 +1697,7 @@
             window.viewNoteFullscreen = function (noteId) { const notes = getNotes(); const note = notes.find(n => n.id === noteId); if (!note) return; document.getElementById('fullscreenNoteTitle').textContent = note.title || 'Untitled'; document.getElementById('fullscreenNoteContent').innerHTML = parseFormatting(note.content || ''); document.getElementById('noteFullscreenOverlay').style.display = 'flex'; };
             window.closeNoteFullscreen = function () { document.getElementById('noteFullscreenOverlay').style.display = 'none'; };
 
-            // Google Drive
+            // Google Drive (unchanged)
             function getDriveConfig() { return load('gdrive_config', { clientId: '', folderName: '' }); }
             window.saveGoogleDriveConfig = function () { const clientId = document.getElementById('gdriveClientId').value.trim(); const folderName = document.getElementById('gdriveFolderName').value.trim(); if (!clientId || !folderName) { showToast('Please enter both Client ID and Folder Name.', 'warning'); return; } save('gdrive_config', { clientId, folderName }); showToast('Google Drive config saved!', 'success'); };
             function loadDriveConfigInputs() { const config = getDriveConfig(); document.getElementById('gdriveClientId').value = config.clientId || ''; document.getElementById('gdriveFolderName').value = config.folderName || ''; }
@@ -1678,7 +1774,7 @@
                 } catch (err) { setDriveStatus('❌ Restore failed: ' + err.message, true); }
             };
 
-            // Navigation & Page Refresh
+            // Navigation & Page Refresh (unchanged)
             function navigateTo(page) {
                 currentPage = page;
                 document.querySelectorAll('.section-page').forEach(el => el.classList.remove('active'));
@@ -1847,7 +1943,7 @@
             function formatDate(ds) { if (!ds) return 'N/A'; const d = new Date(ds + 'T00:00:00'); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
             function formatDateTime(iso) { if (!iso) return 'N/A'; const d = new Date(iso); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); }
 
-            // Session timeout
+            // Session timeout (unchanged)
             function getTimeoutMs() { const mins = parseInt(localStorage.getItem(TIMEOUT_KEY) || '5') || 5; return mins * 60 * 1000; }
             function resetSessionTimer() { if (!currentUser || locked) return; clearTimeout(sessionTimer); clearInterval(sessionTickTimer); sessionTimer = setTimeout(lockSession, getTimeoutMs()); }
             function stopSessionTimer() { clearTimeout(sessionTimer); clearInterval(sessionTickTimer); }
